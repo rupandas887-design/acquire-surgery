@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ConditionPageInfo, Lead } from '../types';
 import { EnquiryForm } from '../components/EnquiryForm';
@@ -19,7 +19,16 @@ import {
   ConditionVectorEmblem,
   SurgicalApproachTrajectoryGraphic,
 } from '../components/SurgicalMotionGraphics';
-import { ArrowLeft, ArrowRight, Check, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  ShieldCheck,
+  CheckCircle2,
+  IndianRupee,
+  ChevronDown,
+  ChevronRight,
+} from 'lucide-react';
 
 interface ConditionLandingPageProps {
   conditionInfo: ConditionPageInfo;
@@ -32,11 +41,19 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
   onLeadSubmitted,
   onNavigate,
 }) => {
+  const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
+
   const scrollToForm = () => {
     document.getElementById('enquiry-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const heroVisual = CONDITION_IMAGES[conditionInfo.slug];
+  const relatedConditions = CONDITION_PAGES.filter((c) =>
+    conditionInfo.relatedSlugs.includes(c.slug)
+  );
+  const otherConditions = CONDITION_PAGES.filter(
+    (c) => c.slug !== conditionInfo.slug && !conditionInfo.relatedSlugs.includes(c.slug)
+  );
 
   return (
     <div className="bg-[#EFF6FF] text-slate-800 overflow-x-clip">
@@ -57,7 +74,7 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
             className="group inline-flex items-center gap-1.5 text-sm font-semibold text-sky-200 hover:text-white py-1 min-h-[40px]"
           >
             <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
-            <span>All Surgical Options</span>
+            <span>All Affordable Surgery Options</span>
           </motion.a>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
@@ -70,13 +87,13 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
               >
                 <ConditionVectorEmblem slug={conditionInfo.slug} size="lg" />
                 <p className="text-xs font-bold uppercase tracking-wider text-[#6EE7B7]">
-                  {conditionInfo.condition} · Surgical Decision Guide
+                  {conditionInfo.condition} · Cost &amp; Hospital Budget Guide
                 </p>
               </motion.div>
               <KineticText
                 as="h1"
                 text={conditionInfo.headline}
-                className="font-display text-2xl sm:text-5xl font-extrabold text-white tracking-tight leading-[1.12]"
+                className="font-display text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.12]"
                 style={{ textWrap: 'balance' }}
                 delay={0.06}
               />
@@ -100,14 +117,14 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.18, ease: EASE_SMOOTH }}
                   onClick={scrollToForm}
-                  className="group relative overflow-hidden w-full sm:w-auto min-h-[50px] inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#34D399] via-[#2DD4BF] to-[#38BDF8] hover:from-[#6EE7B7] hover:to-[#7DD3FC] text-[#041B42] text-sm font-extrabold px-6 py-3 rounded-xl shadow-xl shadow-teal-950/30 transition-all cursor-pointer"
+                  className="group relative overflow-hidden w-full sm:w-auto min-h-[50px] inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#34D399] via-[#2DD4BF] to-[#38BDF8] hover:from-[#6EE7B7] hover:to-[#7DD3FC] text-[#041B42] text-xs sm:text-sm font-extrabold px-4 sm:px-6 py-3 rounded-xl shadow-xl shadow-teal-950/30 transition-all cursor-pointer text-center leading-snug whitespace-normal sm:whitespace-nowrap"
                 >
                   <span
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/35 to-transparent"
                   />
-                  <span className="relative">EXPLORE {conditionInfo.condition.toUpperCase()} OPTIONS</span>
-                  <ArrowRight className="relative w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  <span className="relative">FIND HOSPITALS WITHIN MY BUDGET</span>
+                  <ArrowRight className="relative w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
                 </motion.button>
                 <div className="text-sm text-sky-100">
                   Indicative Package Range:{' '}
@@ -144,7 +161,7 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
                     </ParallaxFrame>
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#041B42]/95 via-[#041B42]/55 to-transparent p-4">
                       <p className="text-xs font-semibold text-white">
-                        {conditionInfo.condition} · Compare Specialists, Hospitals &amp; Estimates
+                        {conditionInfo.condition} · Explore Specialists, Hospitals &amp; Budget Options
                       </p>
                     </div>
                   </div>
@@ -155,7 +172,33 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
         </div>
       </section>
 
-      {/* Condition Medical & Package Details */}
+      {/* Budget Storytelling Callout */}
+      <section className="py-8 sm:py-10 bg-white border-b border-sky-200/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeInView>
+            <div className="rounded-2xl border border-teal-200 bg-gradient-to-r from-[#F0FDFA] via-[#EFF6FF] to-[#FFFBEB] p-5 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="space-y-2 max-w-3xl">
+                <p className="font-display text-lg sm:text-2xl font-extrabold text-[#062B61]">
+                  {conditionInfo.storyQuote}
+                </p>
+                <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
+                  {conditionInfo.storyNarrative}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={scrollToForm}
+                className="w-full lg:w-auto min-h-[48px] inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#062B61] to-[#0D9488] text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-3 rounded-xl shadow-sm hover:shadow-md transition-all text-center leading-snug whitespace-normal sm:whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                <span>GET HELP FINDING THE RIGHT HOSPITAL</span>
+                <ArrowRight className="w-4 h-4 shrink-0" />
+              </button>
+            </div>
+          </FadeInView>
+        </div>
+      </section>
+
+      {/* Condition Medical, Budget Factors & Package Details */}
       <section className="relative py-10 sm:py-16 bg-gradient-to-br from-[#EFF6FF] via-[#F5F3FF]/70 to-[#ECFEFF] border-b border-indigo-200/70 overflow-hidden">
         <div
           aria-hidden="true"
@@ -198,7 +241,7 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
             <div className="space-y-4">
               <FadeInView>
                 <h2 className="font-display text-xl font-extrabold text-[#062B61]">
-                  Common Surgical Approaches Compared
+                  Common {conditionInfo.condition} Surgical Approaches Compared
                 </h2>
               </FadeInView>
               <FadeInView delay={0.04}>
@@ -239,6 +282,39 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
                 ))}
               </StaggerContainer>
             </div>
+
+            {/* Surgery Cost & Budget Factors */}
+            <FadeInView delay={0.06}>
+              <div className="bg-white border border-emerald-200/90 rounded-2xl overflow-hidden shadow-md">
+                <div className="h-1.5 bg-gradient-to-r from-[#059669] via-[#0D9488] to-[#F59E0B]" />
+                <div className="p-5 sm:p-8 space-y-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-9 h-9 rounded-xl bg-emerald-100 text-[#059669] flex items-center justify-center shrink-0">
+                      <IndianRupee className="w-5 h-5" />
+                    </span>
+                    <h2 className="font-display text-xl font-extrabold text-[#062B61]">
+                      {conditionInfo.condition} Surgery Cost &amp; Budget Factors
+                    </h2>
+                  </div>
+                  <h3 className="text-sm font-bold text-[#047857]">
+                    What Determines Your Final Hospital Estimate
+                  </h3>
+                  <ul className="space-y-2 text-sm text-slate-700">
+                    {conditionInfo.budgetFactors.map((factor, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5">
+                        <span className="w-5 h-5 rounded-md bg-teal-100 text-[#0D9488] flex items-center justify-center shrink-0 mt-0.5">
+                          <Check className="w-3.5 h-3.5" />
+                        </span>
+                        <span>{factor}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-xs text-slate-600 bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 leading-relaxed">
+                    <strong>Note on affordability:</strong> Acquire Surgery does not set hospital prices or promise guaranteed savings. Actual costs depend on the hospital, treating surgeon, surgical procedure, medical condition, room category, and other clinical requirements.
+                  </p>
+                </div>
+              </div>
+            </FadeInView>
           </div>
 
           {/* Insurance, Lifestyle Recovery & Questions Sidebar */}
@@ -291,11 +367,56 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
                     Return to Everyday Comfort
                   </p>
                   <p className="text-xs text-white/95 mt-0.5">
-                    Compare suitable day-care and minimally invasive {conditionInfo.condition.toLowerCase()} options first.
+                    Explore suitable accredited hospitals for {conditionInfo.condition.toLowerCase()} treatment within your budget.
                   </p>
                 </div>
               </div>
             </FadeInView>
+          </div>
+        </div>
+      </section>
+
+      {/* Condition Search-Intent FAQs */}
+      <section className="py-10 sm:py-14 bg-white border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="space-y-1.5">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#0D9488]">
+              Common Patient Questions
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#062B61]">
+              {conditionInfo.condition} Surgery &amp; Budget FAQs
+            </h2>
+          </div>
+
+          <div className="space-y-3">
+            {conditionInfo.faqs.map((faq, idx) => {
+              const isOpen = openFaqIdx === idx;
+              return (
+                <div
+                  key={idx}
+                  className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/70"
+                >
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
+                    className="w-full px-4 sm:px-5 py-3.5 sm:py-4 text-left flex items-center justify-between gap-3 sm:gap-4 font-display text-sm sm:text-base font-bold text-[#062B61] hover:bg-sky-50/60 transition-colors cursor-pointer"
+                  >
+                    <span>{faq.question}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 shrink-0 text-[#0D9488] transition-transform duration-200 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-4 text-sm text-slate-700 leading-relaxed border-t border-slate-200/70 pt-3 bg-white">
+                      {faq.answer}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -312,7 +433,7 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
               <div className="group relative rounded-2xl overflow-hidden border-2 border-cyan-300/35 bg-slate-900 aspect-[4/3] shadow-2xl shadow-slate-950/40">
                 <ResilientImage
                   src={LANDING_IMAGES.careCoordinatorSupport}
-                  alt={`Dedicated surgical coordinator helping compare ${conditionInfo.condition} options across partner hospitals`}
+                  alt={`Dedicated surgical coordinator helping compare ${conditionInfo.condition} hospital options within your budget`}
                   loading="lazy"
                   decoding="async"
                   fallbackLabel="Care Coordinator Assistance"
@@ -323,7 +444,7 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
                     {conditionInfo.condition} Option Review
                   </p>
                   <p className="text-sm font-medium text-white mt-0.5">
-                    Share your preferences for customized surgeon and hospital recommendations.
+                    Share your surgery requirement and preferred budget for suitable hospital guidance.
                   </p>
                 </div>
               </div>
@@ -331,11 +452,11 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 space-y-2.5">
                 <div className="flex items-start gap-2.5 text-sm text-sky-100">
                   <CheckCircle2 className="w-4 h-4 text-[#6EE7B7] shrink-0 mt-0.5" />
-                  <span>Compare qualified general &amp; laparoscopic surgeons</span>
+                  <span>Explore credible hospitals &amp; experienced surgeons</span>
                 </div>
                 <div className="flex items-start gap-2.5 text-sm text-sky-100">
                   <CheckCircle2 className="w-4 h-4 text-[#38BDF8] shrink-0 mt-0.5" />
-                  <span>Check insurance TPA coverage &amp; room-category pricing</span>
+                  <span>Clarify room categories, package scope &amp; TPA insurance</span>
                 </div>
               </div>
             </FadeInView>
@@ -344,6 +465,7 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
               <FadeInView delay={0.08}>
                 <EnquiryForm
                   initialCondition={conditionInfo.condition}
+                  ctaLabel="SHARE YOUR SURGERY REQUIREMENT"
                   onSuccess={onLeadSubmitted}
                   onNavigatePrivacy={() => onNavigate('/privacy-policy')}
                 />
@@ -353,27 +475,60 @@ export const ConditionLandingPage: React.FC<ConditionLandingPageProps> = ({
         </div>
       </section>
 
-      {/* Other Condition Pages */}
-      <section className="py-8 sm:py-10 bg-gradient-to-r from-[#EFF6FF] via-[#F0F9FF] to-[#ECFDF5] border-t border-sky-200/80">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#0E7490]">
-            Other Surgical Guides
-          </span>
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {CONDITION_PAGES.filter((c) => c.slug !== conditionInfo.slug).map((c) => (
-              <a
-                key={c.slug}
-                href={`/conditions/${c.slug}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onNavigate(`/conditions/${c.slug}`);
-                }}
-                className="text-sm font-semibold text-[#062B61] hover:text-[#0D9488] hover:underline underline-offset-4 py-1 min-h-[36px] inline-flex items-center transition-colors"
-              >
-                {c.condition}
-              </a>
-            ))}
+      {/* Related & Other Condition Pages (Internal Linking for SEO) */}
+      <section className="py-10 bg-gradient-to-r from-[#EFF6FF] via-[#F0F9FF] to-[#ECFDF5] border-t border-sky-200/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="space-y-3">
+            <h2 className="font-display text-lg font-extrabold text-[#062B61]">
+              Related Surgery Cost &amp; Hospital Guides
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {relatedConditions.map((rel) => (
+                <a
+                  key={rel.slug}
+                  href={`/conditions/${rel.slug}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigate(`/conditions/${rel.slug}`);
+                  }}
+                  className="bg-white border border-sky-200 hover:border-[#0D9488] rounded-xl p-4 flex items-center justify-between gap-3 transition-all shadow-sm hover:shadow-md"
+                >
+                  <div>
+                    <p className="font-display text-sm font-bold text-[#062B61]">
+                      {rel.condition} Surgery Options
+                    </p>
+                    <p className="text-xs font-mono text-slate-600 mt-0.5 tabular-nums">
+                      {rel.estimatedRange}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-[#0D9488] shrink-0" />
+                </a>
+              ))}
+            </div>
           </div>
+
+          {otherConditions.length > 0 && (
+            <div className="pt-4 border-t border-sky-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0E7490]">
+                More Treatment Guides
+              </span>
+              <div className="flex flex-wrap gap-x-5 gap-y-2">
+                {otherConditions.map((c) => (
+                  <a
+                    key={c.slug}
+                    href={`/conditions/${c.slug}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onNavigate(`/conditions/${c.slug}`);
+                    }}
+                    className="text-sm font-semibold text-[#062B61] hover:text-[#0D9488] hover:underline underline-offset-4 py-1 min-h-[36px] inline-flex items-center transition-colors"
+                  >
+                    {c.condition} Surgery
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>

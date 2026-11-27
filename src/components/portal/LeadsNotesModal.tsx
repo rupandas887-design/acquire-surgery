@@ -60,7 +60,7 @@ export const LeadsNotesModal: React.FC<LeadsNotesModalProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs"
     >
       <motion.div
         id="leads-notes-modal"
@@ -71,14 +71,14 @@ export const LeadsNotesModal: React.FC<LeadsNotesModalProps> = ({
         className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Header */}
-        <div className="bg-[#062B61] px-6 py-4 text-white flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <FileText className="w-5 h-5 text-teal-300" />
-            <div>
+        <div className="bg-[#062B61] px-4 sm:px-6 py-3.5 sm:py-4 text-white flex items-center justify-between gap-2 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <FileText className="w-5 h-5 text-teal-300 shrink-0" />
+            <div className="min-w-0">
               <h2 className="text-sm font-bold text-white">
                 Internal Remarks &amp; Follow-up
               </h2>
-              <p className="text-xs text-blue-100">
+              <p className="text-xs text-blue-100 truncate">
                 <span className="font-mono">{lead.leadCode || lead.id.slice(-6)}</span> · {lead.name} ({lead.condition || lead.treatment})
               </p>
             </div>
@@ -86,7 +86,7 @@ export const LeadsNotesModal: React.FC<LeadsNotesModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer shrink-0"
             aria-label="Close modal"
           >
             <X className="w-4 h-4" />
@@ -94,18 +94,18 @@ export const LeadsNotesModal: React.FC<LeadsNotesModalProps> = ({
         </div>
 
         {/* Summary Strip */}
-        <div className="px-6 py-3 bg-slate-50 border-b border-slate-200 text-xs grid grid-cols-2 sm:grid-cols-3 gap-2 shrink-0">
-          <div>
+        <div className="px-4 sm:px-6 py-3 bg-slate-50 border-b border-slate-200 text-xs grid grid-cols-2 sm:grid-cols-3 gap-2 shrink-0">
+          <div className="min-w-0">
             <span className="text-slate-500 block">Mobile</span>
-            <strong className="font-mono text-slate-900 tabular-nums">{lead.mobile}</strong>
+            <strong className="font-mono text-slate-900 tabular-nums break-all">{lead.mobile}</strong>
           </div>
-          <div>
+          <div className="min-w-0">
             <span className="text-slate-500 block">Budget</span>
-            <strong className="text-slate-900">{lead.budget}</strong>
+            <strong className="text-slate-900 break-words">{lead.budget}</strong>
           </div>
-          <div>
+          <div className="col-span-2 sm:col-span-1 min-w-0">
             <span className="text-slate-500 block">Insurance</span>
-            <strong className="text-slate-900">
+            <strong className="text-slate-900 break-words">
               {lead.insuranceStatus || 'Not Sure'}
               {lead.insuranceCompany ? ` (${lead.insuranceCompany})` : ''}
             </strong>
@@ -113,7 +113,7 @@ export const LeadsNotesModal: React.FC<LeadsNotesModalProps> = ({
         </div>
 
         {/* Notes Timeline */}
-        <div className="p-6 overflow-y-auto space-y-3 flex-1">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-3 flex-1">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             Remarks History ({lead.notes?.length || 0})
           </h3>
@@ -171,11 +171,11 @@ export const LeadsNotesModal: React.FC<LeadsNotesModalProps> = ({
                   type="date"
                   value={followUpDate}
                   onChange={(e) => setFollowUpDate(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 font-mono"
+                  className="w-full min-w-0 max-w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 font-mono"
                 />
               </div>
             </div>
-            <div className="text-[11px] text-slate-500 pb-2">
+            <div className="text-[11px] text-slate-500 sm:pb-2">
               Updated by: <strong className="text-slate-700">{currentUser.name}</strong>
             </div>
           </div>
@@ -184,19 +184,19 @@ export const LeadsNotesModal: React.FC<LeadsNotesModalProps> = ({
             <label htmlFor="modal-new-remark" className="text-xs font-semibold text-slate-700 block mb-1">
               Add Internal Remark
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <textarea
                 id="modal-new-remark"
                 rows={2}
                 value={newNoteText}
                 onChange={(e) => setNewNoteText(e.target.value)}
                 placeholder="Enter call summary, surgeon options shared, or follow-up notes..."
-                className="flex-1 px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white resize-none focus:ring-2 focus:ring-[#062B61]"
+                className="flex-1 min-w-0 px-3 py-2 text-xs border border-slate-300 rounded-xl bg-white resize-none focus:ring-2 focus:ring-[#062B61]"
               />
               <button
                 type="submit"
                 disabled={isSubmitting || (!newNoteText.trim() && followUpDate === (lead.followUpDate || ''))}
-                className="px-4 py-2 bg-[#062B61] hover:bg-[#0A3B75] text-white rounded-xl text-xs font-semibold flex flex-col items-center justify-center gap-1 transition-colors disabled:opacity-50 cursor-pointer shrink-0"
+                className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-[#062B61] hover:bg-[#0A3B75] text-white rounded-xl text-xs font-semibold flex flex-row sm:flex-col items-center justify-center gap-1.5 sm:gap-1 transition-colors disabled:opacity-50 cursor-pointer shrink-0"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{isSubmitting ? 'Saving...' : 'Save'}</span>

@@ -79,10 +79,10 @@ export const PortalLogin: React.FC<PortalLoginProps> = ({
         {/* Main Card */}
         <div className="bg-gradient-to-b from-white via-[#F8FAFF] to-[#F0FDFA] rounded-3xl border border-cyan-200/80 shadow-2xl shadow-slate-950/35 overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#062B61] via-[#1D4ED8] via-[#0284C7] to-[#0D9488] p-7 text-white text-center relative">
+          <div className="bg-gradient-to-r from-[#062B61] via-[#1D4ED8] via-[#0284C7] to-[#0D9488] p-5 sm:p-7 text-white text-center relative">
             <button
               onClick={onCancel}
-              className="absolute top-5 right-5 p-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white transition-colors cursor-pointer"
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 p-1.5 rounded-full bg-white/15 hover:bg-white/25 text-white transition-colors cursor-pointer"
               title="Return to Public Website"
             >
               <X className="w-4 h-4" />
@@ -106,7 +106,7 @@ export const PortalLogin: React.FC<PortalLoginProps> = ({
           </div>
 
           {/* Form: Email & Password Only */}
-          <div className="p-6 sm:p-7 space-y-5">
+          <div className="p-5 sm:p-7 space-y-5">
             {errorMessage && (
               <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
@@ -140,7 +140,7 @@ export const PortalLogin: React.FC<PortalLoginProps> = ({
 
               {/* 2. Password Input */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex flex-wrap items-center justify-between gap-1 mb-1.5">
                   <label className="text-xs font-bold text-slate-700 block">
                     Password
                   </label>
@@ -206,17 +206,17 @@ export const PortalLogin: React.FC<PortalLoginProps> = ({
                 <button
                   type="button"
                   onClick={() => handleQuickSelectEmail('Admin@acquire.com', 'Acquire@8131')}
-                  className="w-full text-left p-2.5 rounded-xl border border-blue-100 bg-blue-50/50 hover:bg-blue-100/60 transition-colors flex items-center justify-between cursor-pointer group"
+                  className="w-full text-left p-2.5 rounded-xl border border-blue-100 bg-blue-50/50 hover:bg-blue-100/60 transition-colors flex items-center justify-between gap-2 cursor-pointer group"
                 >
-                  <div>
-                    <span className="font-bold text-blue-900 block text-xs">
+                  <div className="min-w-0">
+                    <span className="font-bold text-blue-900 block text-xs break-all">
                       Admin@acquire.com
                     </span>
-                    <span className="text-[10px] text-blue-700">
+                    <span className="text-[10px] text-blue-700 block leading-snug">
                       Master Administrator Dashboard (Supabase user_roles)
                     </span>
                   </div>
-                  <span className="text-[11px] font-bold text-blue-700 bg-white px-2 py-0.5 rounded-md border border-blue-200 group-hover:border-blue-400">
+                  <span className="shrink-0 text-[11px] font-bold text-blue-700 bg-white px-2 py-0.5 rounded-md border border-blue-200 group-hover:border-blue-400">
                     Admin
                   </span>
                 </button>
@@ -225,17 +225,17 @@ export const PortalLogin: React.FC<PortalLoginProps> = ({
                 <button
                   type="button"
                   onClick={() => handleQuickSelectEmail('manipal@acquiresurgery.com')}
-                  className="w-full text-left p-2.5 rounded-xl border border-emerald-100 bg-emerald-50/50 hover:bg-emerald-100/60 transition-colors flex items-center justify-between cursor-pointer group"
+                  className="w-full text-left p-2.5 rounded-xl border border-emerald-100 bg-emerald-50/50 hover:bg-emerald-100/60 transition-colors flex items-center justify-between gap-2 cursor-pointer group"
                 >
-                  <div>
-                    <span className="font-bold text-emerald-900 block text-xs">
+                  <div className="min-w-0">
+                    <span className="font-bold text-emerald-900 block text-xs break-all">
                       manipal@acquiresurgery.com
                     </span>
-                    <span className="text-[10px] text-emerald-700">
+                    <span className="text-[10px] text-emerald-700 block leading-snug">
                       Manipal Hospital Partner Dashboard
                     </span>
                   </div>
-                  <span className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200 group-hover:border-emerald-400">
+                  <span className="shrink-0 text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200 group-hover:border-emerald-400">
                     Hospital
                   </span>
                 </button>
@@ -243,17 +243,17 @@ export const PortalLogin: React.FC<PortalLoginProps> = ({
                 <button
                   type="button"
                   onClick={() => handleQuickSelectEmail('aster@acquiresurgery.com')}
-                  className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors flex items-center justify-between cursor-pointer group"
+                  className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors flex items-center justify-between gap-2 cursor-pointer group"
                 >
-                  <div>
-                    <span className="font-bold text-slate-800 block text-xs">
+                  <div className="min-w-0">
+                    <span className="font-bold text-slate-800 block text-xs break-all">
                       aster@acquiresurgery.com
                     </span>
-                    <span className="text-[10px] text-slate-500">
+                    <span className="text-[10px] text-slate-500 block leading-snug">
                       Aster CMI Hospital Partner Dashboard
                     </span>
                   </div>
-                  <span className="text-[11px] font-bold text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200 group-hover:border-slate-300">
+                  <span className="shrink-0 text-[11px] font-bold text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200 group-hover:border-slate-300">
                     Hospital
                   </span>
                 </button>

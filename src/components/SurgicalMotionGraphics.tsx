@@ -461,13 +461,13 @@ export const SurgicalApproachTrajectoryGraphic: React.FC<{ conditionName: string
             Typical Care Pathway &amp; Recovery Trajectory
           </h3>
         </div>
-        <div className="flex items-center gap-4 text-xs text-slate-700 font-medium">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-700 font-medium">
           <span className="inline-flex items-center gap-1.5">
-            <span className="w-3.5 h-1 bg-[#0D9488] rounded-full" />
+            <span className="w-3.5 h-1 bg-[#0D9488] rounded-full shrink-0" />
             <span>Minimally Invasive</span>
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="w-3.5 h-1 bg-[#2563EB] rounded-full" />
+            <span className="w-3.5 h-1 bg-[#2563EB] rounded-full shrink-0" />
             <span>Conventional Approach</span>
           </span>
         </div>
@@ -514,7 +514,7 @@ export const SurgicalApproachTrajectoryGraphic: React.FC<{ conditionName: string
         <circle cx="400" cy="16" r="4.5" fill="#10B981" />
       </svg>
 
-      <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 font-medium">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[10px] sm:text-[11px] font-mono text-slate-600 font-medium">
         <span>Day 0 · Consultation</span>
         <span>Day 1–3 · Discharge Window</span>
         <span>Full Routine Recovery</span>
@@ -536,6 +536,8 @@ export const ConditionVectorEmblem: React.FC<{ slug: string; size?: 'sm' | 'lg' 
     hernia: 'bg-gradient-to-br from-[#DBEAFE] to-[#BFDBFE] border-blue-300/80',
     'gallbladder-stones': 'bg-gradient-to-br from-[#CFFAFE] to-[#A5F3FC] border-cyan-300/80',
     piles: 'bg-gradient-to-br from-[#CCFBF1] to-[#99F6E4] border-teal-300/80',
+    'uterine-fibroids': 'bg-gradient-to-br from-[#FCE7F3] to-[#FBCFE8] border-rose-300/80',
+    endometriosis: 'bg-gradient-to-br from-[#F3E8FF] to-[#E9D5FF] border-purple-300/80',
     fissure: 'bg-gradient-to-br from-[#E0E7FF] to-[#C7D2FE] border-indigo-300/80',
     fistula: 'bg-gradient-to-br from-[#D1FAE5] to-[#A7F3D0] border-emerald-300/80',
   };
@@ -611,6 +613,39 @@ export const ConditionVectorEmblem: React.FC<{ slug: string; size?: 'sm' | 'lg' 
               animate={{ scale: [1, 1.12, 1] }}
               transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
               style={{ transformOrigin: '20px 20px' }}
+            />
+          </>
+        )}
+        {slug === 'uterine-fibroids' && (
+          <>
+            <circle cx="20" cy="20" r="11" stroke="#BE185D" strokeWidth="2" />
+            <motion.circle
+              cx="20"
+              cy="20"
+              r="4.5"
+              stroke="#EC4899"
+              strokeWidth="2"
+              animate={{ scale: [1, 1.12, 1] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ transformOrigin: '20px 20px' }}
+            />
+            <circle cx="14" cy="14" r="2" fill="#F43F5E" />
+          </>
+        )}
+        {slug === 'endometriosis' && (
+          <>
+            <path
+              d="M11 20C11 14.5 15 11 20 11C25 11 29 14.5 29 20C29 25.5 25 29 20 29C15 29 11 25.5 11 20Z"
+              stroke="#7E22CE"
+              strokeWidth="2"
+            />
+            <motion.path
+              d="M14 20C17 16 23 24 26 20"
+              stroke="#A855F7"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              animate={{ pathLength: [0.5, 1, 0.5] }}
+              transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
             />
           </>
         )}

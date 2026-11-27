@@ -1,9 +1,11 @@
 export type HospitalCategory = 'Premium Hospital' | 'Standard Hospital' | 'Budget-Friendly Hospital' | 'Specialty Hospital';
 
 export const PATIENT_CONDITIONS = [
+  'Piles',
   'Hernia',
   'Gallbladder Stones',
-  'Piles',
+  'Uterine Fibroids',
+  'Endometriosis',
   'Fissure',
   'Fistula',
   'Other / Not Sure',
@@ -12,12 +14,12 @@ export const PATIENT_CONDITIONS = [
 export type PatientCondition = (typeof PATIENT_CONDITIONS)[number] | string;
 
 export const AFFORDABLE_BUDGETS = [
-  'Below Rs. 50,000',
-  'Rs. 50,000 – Rs. 1 Lakh',
-  'Rs. 1 Lakh – Rs. 1.5 Lakh',
-  'Rs. 1.5 Lakh – Rs. 2 Lakh',
-  'Rs. 2 Lakh – Rs. 5 Lakh',
-  'Above Rs. 5 Lakh',
+  'Below ₹20,000',
+  '₹20,000 – ₹40,000',
+  '₹40,000 – ₹60,000',
+  '₹60,000 – ₹1,00,000',
+  'Above ₹1,00,000',
+  'Not Sure – Help Me Decide',
 ] as const;
 
 export type AffordableBudget = (typeof AFFORDABLE_BUDGETS)[number] | string;
@@ -282,15 +284,28 @@ export interface SearchCriteria {
   city: string;
 }
 
+export interface ConditionPageFaq {
+  question: string;
+  answer: string;
+}
+
 export interface ConditionPageInfo {
   slug: string;
   condition: string;
+  seoTitle: string;
+  seoDescription: string;
+  keywords: string[];
   headline: string;
   subtitle: string;
+  storyQuote: string;
+  storyNarrative: string;
   overview: string;
   whenAdvised: string[];
   surgicalApproaches: { name: string; stay: string; recovery: string; note: string }[];
   estimatedRange: string;
+  budgetFactors: string[];
   insuranceNote: string;
   questionsToAsk: string[];
+  faqs: ConditionPageFaq[];
+  relatedSlugs: string[];
 }

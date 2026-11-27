@@ -39,7 +39,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lead, onNavigateHome
         className="relative z-10 max-w-2xl mx-auto bg-gradient-to-b from-white via-[#F8FAFF] to-[#F0FDFA] border border-cyan-200/80 rounded-2xl overflow-hidden shadow-2xl shadow-slate-950/30"
       >
         <div className="h-2 bg-gradient-to-r from-[#2563EB] via-[#06B6D4] via-[#10B981] to-[#F59E0B]" />
-        <div className="p-6 sm:p-10 space-y-8">
+        <div className="p-5 sm:p-10 space-y-6 sm:space-y-8">
           <div className="space-y-4">
             <div className="relative inline-flex items-center justify-center w-14 h-14">
               <motion.div
@@ -109,32 +109,32 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lead, onNavigateHome
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.16, ease: EASE_SMOOTH }}
-            className="bg-gradient-to-br from-[#EFF6FF] via-white to-[#ECFEFF] border border-sky-200 rounded-xl p-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm shadow-xs"
+            className="bg-gradient-to-br from-[#EFF6FF] via-white to-[#ECFEFF] border border-sky-200 rounded-xl p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 text-sm shadow-xs"
           >
-            <div>
+            <div className="min-w-0">
               <span className="text-xs font-semibold text-[#0E7490] block">Reference Lead ID</span>
-              <span className="font-mono font-bold text-[#062B61] tabular-nums mt-0.5 block">
+              <span className="font-mono font-bold text-[#062B61] tabular-nums mt-0.5 block break-all">
                 {leadRef}
               </span>
             </div>
-            <div>
+            <div className="min-w-0">
               <span className="text-xs font-semibold text-[#0E7490] block">Submitted On</span>
               <span className="font-mono text-slate-800 tabular-nums mt-0.5 block">
                 {submittedTime}
               </span>
             </div>
             {lead?.condition && (
-              <div>
+              <div className="min-w-0">
                 <span className="text-xs font-semibold text-[#0E7490] block">Condition</span>
-                <span className="font-semibold text-slate-900 mt-0.5 block">
+                <span className="font-semibold text-slate-900 mt-0.5 block break-words">
                   {lead.condition}
                 </span>
               </div>
             )}
             {lead?.budget && (
-              <div>
+              <div className="min-w-0">
                 <span className="text-xs font-semibold text-[#0E7490] block">Affordable Budget</span>
-                <span className="font-semibold text-slate-900 mt-0.5 block">
+                <span className="font-semibold text-slate-900 mt-0.5 block break-words">
                   {lead.budget}
                 </span>
               </div>
@@ -169,9 +169,9 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lead, onNavigateHome
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackWhatsAppClick(`thank_you_${leadRef}`)}
-              className="flex-1 min-h-[48px] inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#059669] to-[#0D9488] hover:from-[#047857] hover:to-[#0F766E] text-white text-sm font-bold px-5 py-3 rounded-xl shadow-md shadow-emerald-900/15 transition-all"
+              className="flex-1 min-h-[48px] inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#059669] to-[#0D9488] hover:from-[#047857] hover:to-[#0F766E] text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-3 rounded-xl shadow-md shadow-emerald-900/15 transition-all text-center leading-snug"
             >
-              <MessageCircle className="w-4 h-4" />
+              <MessageCircle className="w-4 h-4 shrink-0" />
               <span>Message Coordinator on WhatsApp</span>
             </motion.a>
             <motion.a
@@ -179,9 +179,9 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ lead, onNavigateHome
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.16, ease: EASE_SMOOTH }}
               href="tel:+919429693887"
-              className="min-h-[48px] inline-flex items-center justify-center gap-2 border border-blue-200 bg-gradient-to-r from-[#EFF6FF] to-[#E0F2FE] hover:from-[#DBEAFE] hover:to-[#BAE6FD] text-[#062B61] text-sm font-bold px-5 py-3 rounded-xl transition-all"
+              className="min-h-[48px] inline-flex items-center justify-center gap-2 border border-blue-200 bg-gradient-to-r from-[#EFF6FF] to-[#E0F2FE] hover:from-[#DBEAFE] hover:to-[#BAE6FD] text-[#062B61] text-xs sm:text-sm font-bold px-4 sm:px-5 py-3 rounded-xl transition-all whitespace-nowrap"
             >
-              <Phone className="w-4 h-4 text-[#1D4ED8]" />
+              <Phone className="w-4 h-4 text-[#1D4ED8] shrink-0" />
               <span>+91 94296 93887</span>
             </motion.a>
           </div>

@@ -421,7 +421,7 @@ export const HospitalDashboard: React.FC<HospitalDashboardProps> = ({
             <Logo size="sm" showTagline={false} />
             <div className="h-6 w-px bg-slate-200 hidden sm:block shrink-0" />
             <div className="flex items-center gap-2 min-w-0">
-              <span className="px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#062B61] text-white whitespace-nowrap">
+              <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-[#062B61] text-white whitespace-nowrap shrink-0">
                 Hospital Portal
               </span>
               <span className="text-xs text-slate-500 font-semibold hidden md:inline truncate">
@@ -532,13 +532,13 @@ export const HospitalDashboard: React.FC<HospitalDashboardProps> = ({
                     Manage your hospital's public branding, official licensing, and verified contact points.
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#062B61] hover:bg-[#0A3B75] text-white text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl bg-[#062B61] hover:bg-[#0A3B75] text-white text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
                   >
-                    <Save className="w-4 h-4" />
+                    <Save className="w-4 h-4 shrink-0" />
                     <span>{loading ? 'Saving Changes...' : 'Save Changes'}</span>
                   </button>
                   <button
@@ -686,7 +686,7 @@ export const HospitalDashboard: React.FC<HospitalDashboardProps> = ({
             </div>
 
             {/* Second Card: Hospital Address (Separate Fields Requirement) */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 sm:p-7">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 sm:p-7">
               <div className="pb-4 border-b border-slate-100">
                 <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-[#062B61]" />
@@ -1338,7 +1338,7 @@ export const HospitalDashboard: React.FC<HospitalDashboardProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handleSaveSurgery} className="p-6 space-y-4">
+            <form onSubmit={handleSaveSurgery} className="p-5 sm:p-6 space-y-4">
               {/* Surgery Name */}
               <div>
                 <label className="text-xs font-bold text-slate-700 block mb-1">
@@ -1355,7 +1355,7 @@ export const HospitalDashboard: React.FC<HospitalDashboardProps> = ({
               </div>
 
               {/* Cost Range */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-bold text-slate-700 block mb-1">
                     Minimum Cost (₹) <span className="text-rose-500">*</span>
@@ -1413,17 +1413,17 @@ export const HospitalDashboard: React.FC<HospitalDashboardProps> = ({
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3">
                 <button
                   type="button"
                   onClick={() => setSurgeryModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#062B61] hover:bg-[#0A3B75] text-white text-xs font-bold"
+                  className="w-full sm:w-auto px-5 py-2.5 sm:py-2 rounded-xl bg-[#062B61] hover:bg-[#0A3B75] text-white text-xs font-bold cursor-pointer"
                 >
                   {editingSurgeryId ? 'Update Surgery' : 'Save Surgery'}
                 </button>

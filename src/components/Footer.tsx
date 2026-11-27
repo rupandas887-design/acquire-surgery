@@ -36,7 +36,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 Acquire Surgery – Your Surgical Decision Partner.
               </p>
               <p className="text-xs sm:text-sm text-slate-300/90 leading-relaxed max-w-md">
-                Acquire Surgery is not a hospital. It is a patient-focused Surgical Decision Partner that helps patients explore and compare experienced surgeons, hospital facilities, and affordable treatment estimates before deciding.
+                Acquire Surgery is not a hospital or surgery provider. We help patients find suitable, credible hospitals and experienced surgeons based on their treatment requirements and surgery budget.
               </p>
             </div>
 

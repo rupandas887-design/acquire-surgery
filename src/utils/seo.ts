@@ -56,22 +56,28 @@ export function applyRouteSeo(currentPath: string, condition?: ConditionPageInfo
 
   if (condition) {
     config = {
-      title: `${condition.condition} Surgery Options & Cost – Acquire Surgery`,
-      description: `${condition.subtitle} Indicative package range: ${condition.estimatedRange}. Compare surgeons & hospitals with Acquire Surgery.`,
+      title: condition.seoTitle,
+      description: condition.seoDescription,
       robots: 'index, follow',
       schema: [
         {
           '@context': 'https://schema.org',
           '@type': 'MedicalWebPage',
-          name: `${condition.condition} Surgery Options – Acquire Surgery`,
-          description: condition.overview,
+          name: condition.seoTitle,
+          description: condition.seoDescription,
           url: canonicalUrl,
           about: {
             '@type': 'MedicalCondition',
             name: condition.condition,
           },
+          mainEntity: {
+            '@type': 'MedicalProcedure',
+            name: `${condition.condition} Surgery & Treatment Options`,
+            description: condition.overview,
+            procedureType: 'http://schema.org/SurgicalProcedure',
+          },
           publisher: {
-            '@type': 'Organization',
+            '@type': 'MedicalOrganization',
             name: 'Acquire Surgery',
             url: origin,
           },
@@ -97,12 +103,12 @@ export function applyRouteSeo(currentPath: string, condition?: ConditionPageInfo
         {
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
-          mainEntity: condition.questionsToAsk.map((q) => ({
+          mainEntity: condition.faqs.map((faq) => ({
             '@type': 'Question',
-            name: q,
+            name: faq.question,
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `${condition.overview} ${condition.insuranceNote}`,
+              text: faq.answer,
             },
           })),
         },
@@ -110,9 +116,9 @@ export function applyRouteSeo(currentPath: string, condition?: ConditionPageInfo
     };
   } else if (cleanPath === '/privacy-policy') {
     config = {
-      title: 'Privacy Policy & Data Protection – Acquire Surgery',
+      title: 'Privacy Policy & Patient Confidentiality – Acquire Surgery',
       description:
-        'Read how Acquire Surgery protects your medical enquiry details, insurance information, and privacy with strict healthcare data confidentiality.',
+        'Learn how Acquire Surgery safeguards your medical enquiry details, surgery budget preferences, and insurance information.',
       robots: 'index, follow',
       schema: {
         '@context': 'https://schema.org',
@@ -125,7 +131,7 @@ export function applyRouteSeo(currentPath: string, condition?: ConditionPageInfo
     config = {
       title: 'Terms of Surgical Decision Assistance – Acquire Surgery',
       description:
-        'Review the Terms of Assistance for Acquire Surgery, explaining our independent surgical decision support, indicative estimates, and patient choice.',
+        'Review the Terms of Assistance for Acquire Surgery explaining our independent hospital comparison and budget-focused guidance.',
       robots: 'index, follow',
       schema: {
         '@context': 'https://schema.org',
@@ -136,9 +142,9 @@ export function applyRouteSeo(currentPath: string, condition?: ConditionPageInfo
     };
   } else if (cleanPath === '/thank-you') {
     config = {
-      title: 'Enquiry Received – Acquire Surgery',
+      title: 'Requirement Received – Acquire Surgery',
       description:
-        'Thank you for submitting your surgical requirements to Acquire Surgery. Our care coordination team will contact you shortly.',
+        'Thank you for sharing your surgery requirement and budget with Acquire Surgery. Our care coordination team will reach out shortly.',
       robots: 'noindex, nofollow',
     };
   } else if (cleanPath === '/admin') {
@@ -149,9 +155,9 @@ export function applyRouteSeo(currentPath: string, condition?: ConditionPageInfo
     };
   } else {
     config = {
-      title: 'Acquire Surgery – Compare Surgeons, Hospitals & Costs',
+      title: 'Acquire Surgery – Affordable Surgery Within Your Budget',
       description:
-        'Compare experienced surgeons, accredited hospital facilities, and transparent treatment estimates before deciding on surgery with Acquire Surgery.',
+        'Quoted high for surgery? Compare hospital surgery costs for piles, hernia, gallbladder stones, uterine fibroids & endometriosis within your budget.',
       robots: 'index, follow',
       schema: [
         {
@@ -164,7 +170,7 @@ export function applyRouteSeo(currentPath: string, condition?: ConditionPageInfo
           telephone: '+91-94296-93887',
           email: 'acquireopd@gmail.com',
           description:
-            'Independent surgical decision platform helping patients explore experienced surgeons, accredited hospitals, and transparent surgery packages.',
+            'Independent patient decision platform helping patients find suitable hospitals and affordable surgery options in India matched to their treatment needs and budget.',
           areaServed: {
             '@type': 'Country',
             name: 'India',
@@ -182,26 +188,26 @@ export function applyRouteSeo(currentPath: string, condition?: ConditionPageInfo
           mainEntity: [
             {
               '@type': 'Question',
-              name: 'Is Acquire Surgery a hospital?',
+              name: 'How does Acquire Surgery help if I received a high surgery quotation?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'No. Acquire Surgery is an independent Surgical Decision Partner that helps diagnosed patients explore and compare experienced surgeons, hospital facilities, and transparent treatment packages.',
+                text: 'If a hospital quoted a high amount such as ₹1,00,000 for piles or another surgery, Acquire Surgery helps you discover other suitable, credible hospitals and experienced surgeons that match your treatment requirements and budget.',
               },
             },
             {
               '@type': 'Question',
-              name: 'What surgical conditions does Acquire Surgery help with?',
+              name: 'Is Acquire Surgery a hospital or surgery provider?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'We help patients explore surgical options for Hernia, Gallbladder Stones, Piles, Fissure, Fistula, and other advised general or laparoscopic procedures.',
+                text: 'No. Acquire Surgery is not a hospital or clinic. We are an independent patient decision platform that helps patients explore suitable hospitals, surgeons, and indicative treatment options based on their medical needs and affordability.',
               },
             },
             {
               '@type': 'Question',
-              name: 'Can I compare surgery costs and health insurance eligibility?',
+              name: 'Are surgery prices fixed or guaranteed on Acquire Surgery?',
               acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. You can share your preferred budget range and health insurance or TPA details to explore suitable hospitals and transparent treatment estimates.',
+                text: 'No. Actual surgery costs depend on the hospital, treating surgeon, surgical procedure, medical condition, room category, and other clinical requirements confirmed after doctor evaluation.',
               },
             },
           ],

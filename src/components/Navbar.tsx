@@ -57,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const navLinks = [
-    { id: 'decision-factors', label: 'Decision Factors' },
+    { id: 'budget-finder', label: 'Budget Finder' },
     { id: 'condition-guides', label: 'Surgeries' },
     { id: 'what-happens-next', label: 'How It Works' },
     { id: 'enquiry-form', label: 'Enquiry Form' },
@@ -94,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Zone 2: Concise Single-Line Navigation Links */}
           <nav
             aria-label="Primary navigation"
-            className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium text-slate-600"
+            className="hidden md:flex items-center md:gap-4 lg:gap-8 text-xs lg:text-sm font-medium text-slate-600"
           >
             {navLinks.map((link) => (
               <button
@@ -120,10 +120,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               whileTap={{ scale: 0.97 }}
               transition={{ duration: 0.16, ease: EASE_SMOOTH }}
               onClick={handleActionClick}
-              className="group hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-[#062B61] via-[#1D4ED8] to-[#0D9488] hover:from-[#05234E] hover:to-[#0F766E] text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm shadow-blue-900/15 transition-all whitespace-nowrap shrink-0 cursor-pointer min-h-[40px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#062B61]"
+              className="group hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-[#062B61] via-[#1D4ED8] to-[#0D9488] hover:from-[#05234E] hover:to-[#0F766E] text-white text-xs lg:text-sm font-semibold px-3.5 lg:px-4 py-2.5 rounded-lg shadow-sm shadow-blue-900/15 transition-all whitespace-nowrap shrink-0 cursor-pointer min-h-[40px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#062B61]"
             >
               <span>Explore Options</span>
-              <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+              <ArrowRight className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
             </motion.button>
 
             <motion.button
@@ -186,7 +186,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setMobileMenuOpen(false);
                         onNavigate(`/conditions/${c.slug}`);
                       }}
-                      className="px-3 py-2.5 min-h-[44px] flex items-center text-sm font-medium text-[#062B61] bg-white/80 border border-sky-100 hover:bg-sky-50 rounded-lg transition-colors"
+                      className="px-2.5 sm:px-3 py-2.5 min-h-[44px] flex items-center text-xs sm:text-sm font-medium text-[#062B61] bg-white/80 border border-sky-100 hover:bg-sky-50 rounded-lg transition-colors leading-tight"
                     >
                       {c.condition}
                     </a>

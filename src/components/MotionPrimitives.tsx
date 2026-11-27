@@ -184,22 +184,24 @@ export const KineticText: React.FC<KineticTextProps> = ({
       }}
     >
       {words.map((word, idx) => (
-        <span key={`${word}-${idx}`} className="inline-block overflow-hidden align-bottom pb-[0.06em] -mb-[0.06em]">
-          <motion.span
-            className="inline-block"
-            variants={{
-              hidden: { y: '105%', opacity: 0 },
-              visible: {
-                y: '0%',
-                opacity: 1,
-                transition: { duration: 0.5, ease: EASE_SMOOTH },
-              },
-            }}
-          >
-            {word}
-          </motion.span>
-          {idx < words.length - 1 ? '\u00A0' : ''}
-        </span>
+        <React.Fragment key={`${word}-${idx}`}>
+          <span className="inline-block overflow-hidden align-bottom pb-[0.06em] -mb-[0.06em] max-w-full">
+            <motion.span
+              className="inline-block"
+              variants={{
+                hidden: { y: '105%', opacity: 0 },
+                visible: {
+                  y: '0%',
+                  opacity: 1,
+                  transition: { duration: 0.5, ease: EASE_SMOOTH },
+                },
+              }}
+            >
+              {word}
+            </motion.span>
+          </span>
+          {idx < words.length - 1 ? ' ' : ''}
+        </React.Fragment>
       ))}
     </MotionTag>
   );

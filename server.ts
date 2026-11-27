@@ -36,6 +36,12 @@ let schedules: PatientSchedule[] = [...INITIAL_SCHEDULES];
 function parseBudgetNumeric(budgetString: string): number {
   if (!budgetString) return 1000000;
   const lower = budgetString.toLowerCase();
+  if (lower.includes('not sure')) return 1000000;
+  if (lower.includes('below ₹20,000') || lower.includes('below rs. 20,000')) return 20000;
+  if (lower.includes('20,000') && lower.includes('40,000')) return 40000;
+  if (lower.includes('40,000') && lower.includes('60,000')) return 60000;
+  if (lower.includes('60,000') && lower.includes('1,00,000')) return 100000;
+  if (lower.includes('above ₹1,00,000') || lower.includes('above rs. 1,00,000')) return 200000;
   if (lower.includes('below 50,000') || lower.includes('below ₹50,000') || lower.includes('below rs. 50,000')) return 50000;
   if (lower.includes('50,000 – 1 lakh') || lower.includes('50,000 – ₹1 lakh') || lower.includes('50,000 – rs. 1 lakh')) return 100000;
   if (lower.includes('1 lakh – rs. 1.5 lakh') || lower.includes('1 – 1.5 lakh')) return 150000;
@@ -756,7 +762,7 @@ async function startServer() {
         insuranceStatus = 'Not Sure',
         insuranceCompany = '',
         expectedSurgeryDate = '',
-        budget = 'Below Rs. 50,000',
+        budget = 'Not Sure – Help Me Decide',
         city = 'India',
         whatsappConsent = true,
         attribution = {},

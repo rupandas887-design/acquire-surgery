@@ -12,26 +12,31 @@ import { ShieldCheck, ArrowRight, AlertCircle, Calendar, Lock } from 'lucide-rea
 import { EASE_SMOOTH } from './MotionPrimitives';
 
 interface EnquiryFormProps {
+  idPrefix?: string;
   initialCondition?: string;
+  initialBudget?: string;
+  ctaLabel?: string;
   onSuccess: (lead: Lead) => void;
   onNavigatePrivacy: () => void;
   compactHeader?: boolean;
 }
 
 export const EnquiryForm: React.FC<EnquiryFormProps> = ({
+  idPrefix = 'enquiry',
   initialCondition,
+  initialBudget,
+  ctaLabel = 'FIND HOSPITALS WITHIN MY BUDGET',
   onSuccess,
   onNavigatePrivacy,
   compactHeader = false,
 }) => {
-  const [condition, setCondition] = useState<string>(initialCondition || '');
-  const [suggestedTreatmentPlan, setSuggestedTreatmentPlan] = useState('');
-  const [insuranceStatus, setInsuranceStatus] = useState<InsuranceStatus | ''>('');
-  const [insuranceCompany, setInsuranceCompany] = useState('');
-  const [expectedSurgeryDate, setExpectedSurgeryDate] = useState('');
-  const [budget, setBudget] = useState<string>('');
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
+  const [condition, setCondition] = useState<string>(initialCondition || '');
+  const [insuranceStatus, setInsuranceStatus] = useState<'Yes' | 'No' | ''>('');
+  const [budget, setBudget] = useState<string>(initialBudget || '');
+  const [suggestedTreatmentPlan, setSuggestedTreatmentPlan] = useState('');
+  const [expectedSurgeryDate, setExpectedSurgeryDate] = useState('');
   const [whatsappConsent, setWhatsappConsent] = useState(true);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -41,39 +46,33 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
   useEffect(() => {
     if (initialCondition) {
       setCondition(initialCondition);
+      setErrors((prev) => ({ ...prev, condition: '' }));
     }
   }, [initialCondition]);
 
+  useEffect(() => {
+    if (initialBudget) {
+      setBudget(initialBudget);
+      setErrors((prev) => ({ ...prev, budget: '' }));
+    }
+  }, [initialBudget]);
+
   const todayISO = new Date().toISOString().split('T')[0];
 
+  const showBudgetField = insuranceStatus === 'No';
+
   const completedRequiredCount =
-    (condition ? 1 : 0) +
-    (budget ? 1 : 0) +
-    (insuranceStatus ? 1 : 0) +
     (name.trim().length >= 2 ? 1 : 0) +
     (/^[6-9]\d{9}$/.test(mobile.replace(/\D/g, '')) ? 1 : 0) +
-    (insuranceStatus === 'Yes' ? (insuranceCompany.trim() ? 1 : 0) : 0);
-  const totalRequiredCount = insuranceStatus === 'Yes' ? 6 : 5;
+    (condition ? 1 : 0) +
+    (insuranceStatus ? 1 : 0) +
+    (showBudgetField && budget ? 1 : 0);
+  const totalRequiredCount = showBudgetField ? 5 : 4;
   const completionRatio = Math.min(1, completedRequiredCount / totalRequiredCount);
 
   const validate = (): boolean => {
     const nextErrors: Record<string, string> = {};
 
-    if (!condition) {
-      nextErrors.condition = 'Please select your surgical condition.';
-    }
-    if (!insuranceStatus) {
-      nextErrors.insuranceStatus = 'Please indicate whether you have health insurance.';
-    }
-    if (insuranceStatus === 'Yes' && !insuranceCompany.trim()) {
-      nextErrors.insuranceCompany = 'Please enter your Insurance Company or TPA name.';
-    }
-    if (expectedSurgeryDate && expectedSurgeryDate < todayISO) {
-      nextErrors.expectedSurgeryDate = 'Please select today or a future date, or leave blank if undecided.';
-    }
-    if (!budget) {
-      nextErrors.budget = 'Please select your affordable treatment budget range.';
-    }
     if (!name.trim() || name.trim().length < 2) {
       nextErrors.name = 'Please enter the patient or contact person name.';
     }
@@ -81,9 +80,30 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
     if (!/^[6-9]\d{9}$/.test(cleanDigits)) {
       nextErrors.mobile = 'Please enter a valid 10-digit Indian mobile number (starting with 6–9).';
     }
+    if (!condition) {
+      nextErrors.condition = 'Please select your surgical condition.';
+    }
+    if (!insuranceStatus) {
+      nextErrors.insuranceStatus = 'Please select Yes or No for health insurance.';
+    }
+    if (insuranceStatus === 'No' && !budget) {
+      nextErrors.budget = 'Please select your affordable treatment budget range.';
+    }
+    if (expectedSurgeryDate && expectedSurgeryDate < todayISO) {
+      nextErrors.expectedSurgeryDate = 'Please select today or a future date, or leave blank if undecided.';
+    }
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
+  };
+
+  const handleInsuranceChange = (option: 'Yes' | 'No') => {
+    setInsuranceStatus(option);
+    setErrors((prev) => ({
+      ...prev,
+      insuranceStatus: '',
+      ...(option === 'Yes' ? { budget: '' } : {}),
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -95,15 +115,18 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
     setIsSubmitting(true);
     try {
       const attribution = getAttributionData();
+      const effectiveBudget =
+        insuranceStatus === 'Yes' ? 'Covered by Health Insurance' : budget;
+
       const { lead } = await api.createLead({
         name: name.trim(),
         mobile: mobile.replace(/\D/g, '').slice(-10),
         condition,
-        suggestedTreatmentPlan: suggestedTreatmentPlan.trim(),
         insuranceStatus: insuranceStatus as InsuranceStatus,
-        insuranceCompany: insuranceStatus === 'Yes' ? insuranceCompany.trim() : '',
+        insuranceCompany: '',
+        budget: effectiveBudget,
+        suggestedTreatmentPlan: suggestedTreatmentPlan.trim(),
         expectedSurgeryDate: expectedSurgeryDate || '',
-        budget,
         whatsappConsent,
         attribution,
         source: attribution.sourceCampaign || 'Acquire Surgery Landing Page',
@@ -136,10 +159,10 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
           Let&apos;s Understand Your Surgery Requirements.
         </h2>
         <p className="text-sm sm:text-base text-sky-100 mt-1.5">
-          Share a few details. Our team will help you explore suitable surgical options.
+          Share your surgery requirement and preferences. Our team will help you explore suitable hospital options.
         </p>
 
-        {/* Smooth GPU completion progress indicator */}
+        {/* Smooth completion progress indicator */}
         <div
           aria-hidden="true"
           className="absolute bottom-0 left-0 right-0 h-[4px] bg-white/20 overflow-hidden"
@@ -154,7 +177,11 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
       </div>
 
       {/* Form Body */}
-      <form onSubmit={handleSubmit} noValidate className="p-5 sm:p-8 space-y-5 bg-gradient-to-b from-[#F8FAFF] via-white to-[#F0FDFA]/80">
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        className="p-5 sm:p-8 space-y-5 bg-gradient-to-b from-[#F8FAFF] via-white to-[#F0FDFA]/80"
+      >
         <AnimatePresence>
           {submitError && (
             <motion.div
@@ -171,14 +198,73 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* 1. Patient Condition */}
+        {/* Field 1: Patient / Contact Person Name & Field 2: Mobile Number */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label htmlFor="enquiry-condition" className="block text-sm font-semibold text-slate-800 mb-1.5">
-              1. Patient Condition <span className="text-rose-600">*</span>
+            <label htmlFor={`${idPrefix}-name`} className="block text-sm font-semibold text-slate-800 mb-1.5">
+              Patient / Contact Person Name <span className="text-rose-600">*</span>
+            </label>
+            <input
+              id={`${idPrefix}-name`}
+              type="text"
+              autoComplete="name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+              }}
+              placeholder="Enter full name"
+              className={`w-full min-h-[46px] px-3.5 py-2.5 text-sm rounded-xl border bg-white text-slate-900 placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] ${
+                errors.name ? 'border-rose-400' : 'border-slate-300'
+              }`}
+              required
+            />
+            {errors.name && (
+              <p className="text-xs text-rose-600 mt-1">{errors.name}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor={`${idPrefix}-mobile`} className="block text-sm font-semibold text-slate-800 mb-1.5">
+              Mobile Number <span className="text-rose-600">*</span>
+            </label>
+            <div className="flex">
+              <span className="inline-flex items-center px-3 bg-gradient-to-b from-sky-50 to-cyan-50 border border-r-0 border-slate-300 rounded-l-xl text-sm font-bold text-[#062B61] font-mono shrink-0">
+                +91
+              </span>
+              <input
+                id={`${idPrefix}-mobile`}
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                maxLength={10}
+                value={mobile}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  setMobile(digits);
+                  if (errors.mobile) setErrors((prev) => ({ ...prev, mobile: '' }));
+                }}
+                placeholder="10-digit mobile number"
+                className={`min-w-0 flex-1 w-full min-h-[46px] px-3.5 py-2.5 text-sm rounded-r-xl border bg-white text-slate-900 font-mono tabular-nums placeholder:font-sans placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] ${
+                  errors.mobile ? 'border-rose-400' : 'border-slate-300'
+                }`}
+                required
+              />
+            </div>
+            {errors.mobile && (
+              <p className="text-xs text-rose-600 mt-1">{errors.mobile}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Field 3: Patient Condition & Field 4: Do You Have Health Insurance? */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label htmlFor={`${idPrefix}-condition`} className="block text-sm font-semibold text-slate-800 mb-1.5">
+              Patient Condition <span className="text-rose-600">*</span>
             </label>
             <select
-              id="enquiry-condition"
+              id={`${idPrefix}-condition`}
               value={condition}
               onChange={(e) => {
                 setCondition(e.target.value);
@@ -201,143 +287,112 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
             )}
           </div>
 
-          {/* 5. Affordable Treatment Budget */}
           <div>
-            <label htmlFor="enquiry-budget" className="block text-sm font-semibold text-slate-800 mb-1.5">
-              5. Affordable Treatment Budget <span className="text-rose-600">*</span>
-            </label>
-            <select
-              id="enquiry-budget"
-              value={budget}
-              onChange={(e) => {
-                setBudget(e.target.value);
-                if (errors.budget) setErrors((prev) => ({ ...prev, budget: '' }));
-              }}
-              className={`w-full min-h-[46px] px-3.5 py-2.5 text-sm rounded-xl border bg-white text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] ${
-                errors.budget ? 'border-rose-400' : 'border-slate-300'
-              }`}
-              required
-            >
-              <option value="">Select budget range...</option>
-              {AFFORDABLE_BUDGETS.map((range) => (
-                <option key={range} value={range}>
-                  {range}
-                </option>
-              ))}
-            </select>
-            {errors.budget && (
-              <p className="text-xs text-rose-600 mt-1">{errors.budget}</p>
-            )}
+            <fieldset>
+              <legend className="block text-sm font-semibold text-slate-800 mb-1.5">
+                Do You Have Health Insurance? <span className="text-rose-600">*</span>
+              </legend>
+              <div className="grid grid-cols-2 gap-2.5">
+                {(['Yes', 'No'] as const).map((option) => {
+                  const selected = insuranceStatus === option;
+                  return (
+                    <motion.label
+                      key={option}
+                      whileTap={{ scale: 0.97 }}
+                      className={`min-h-[46px] flex items-center justify-center px-4 py-2.5 rounded-xl border text-sm font-semibold cursor-pointer transition-all ${
+                        selected
+                          ? 'bg-gradient-to-r from-[#1D4ED8] via-[#0284C7] to-[#0D9488] text-white border-[#0284C7] shadow-sm'
+                          : errors.insuranceStatus
+                          ? 'bg-white text-slate-700 border-rose-400 hover:bg-sky-50/70'
+                          : 'bg-white text-slate-700 border-slate-300 hover:border-[#0284C7] hover:bg-sky-50/70'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name={`${idPrefix}-insuranceStatus`}
+                        value={option}
+                        checked={selected}
+                        onChange={() => handleInsuranceChange(option)}
+                        className="sr-only"
+                      />
+                      <span>{option}</span>
+                    </motion.label>
+                  );
+                })}
+              </div>
+              {errors.insuranceStatus && (
+                <p className="text-xs text-rose-600 mt-1">{errors.insuranceStatus}</p>
+              )}
+            </fieldset>
           </div>
         </div>
 
-        {/* 2. Suggested Treatment Plan */}
-        <div>
-          <label htmlFor="enquiry-treatment-plan" className="block text-sm font-semibold text-slate-800 mb-1.5">
-            2. Suggested Treatment Plan <span className="text-xs font-normal text-slate-500">(Optional)</span>
-          </label>
-          <textarea
-            id="enquiry-treatment-plan"
-            rows={2}
-            value={suggestedTreatmentPlan}
-            onChange={(e) => setSuggestedTreatmentPlan(e.target.value)}
-            placeholder="What has your doctor recommended? Example: Laparoscopic Hernia Surgery."
-            className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] resize-y"
-          />
-        </div>
-
-        {/* 3. Do You Have Health Insurance? */}
-        <div className="space-y-3">
-          <fieldset>
-            <legend className="block text-sm font-semibold text-slate-800 mb-2">
-              3. Do You Have Health Insurance? <span className="text-rose-600">*</span>
-            </legend>
-            <div className="grid grid-cols-3 gap-2.5 sm:max-w-md">
-              {(['Yes', 'No', 'Not Sure'] as InsuranceStatus[]).map((option) => {
-                const selected = insuranceStatus === option;
-                return (
-                  <motion.label
-                    key={option}
-                    whileTap={{ scale: 0.97 }}
-                    className={`min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold cursor-pointer transition-all ${
-                      selected
-                        ? 'bg-gradient-to-r from-[#1D4ED8] via-[#0284C7] to-[#0D9488] text-white border-[#0284C7] shadow-sm'
-                        : 'bg-white text-slate-700 border-sky-200 hover:bg-sky-50/70'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="insuranceStatus"
-                      value={option}
-                      checked={selected}
-                      onChange={() => {
-                        setInsuranceStatus(option);
-                        if (errors.insuranceStatus) {
-                          setErrors((prev) => ({ ...prev, insuranceStatus: '' }));
-                        }
-                        if (option !== 'Yes') {
-                          setErrors((prev) => ({ ...prev, insuranceCompany: '' }));
-                        }
-                      }}
-                      className="sr-only"
-                    />
-                    <span>{option}</span>
-                  </motion.label>
-                );
-              })}
-            </div>
-            {errors.insuranceStatus && (
-              <p className="text-xs text-rose-600 mt-1">{errors.insuranceStatus}</p>
-            )}
-          </fieldset>
-
-          {/* Conditional Field: Insurance Company / TPA */}
-          <AnimatePresence initial={false}>
-            {insuranceStatus === 'Yes' && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.22, ease: EASE_SMOOTH }}
-                className="pt-1"
-              >
-                <label htmlFor="enquiry-insurance-company" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                  Insurance Company / TPA <span className="text-rose-600">*</span>
+        {/* Field 5: Affordable Treatment Budget (shown ONLY when Health Insurance === 'No') */}
+        <AnimatePresence initial={false}>
+          {showBudgetField && (
+            <motion.div
+              key="budget-field-container"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.22, ease: EASE_SMOOTH }}
+              className="overflow-hidden"
+            >
+              <div className="pt-0.5">
+                <label htmlFor={`${idPrefix}-budget`} className="block text-sm font-semibold text-slate-800 mb-1.5">
+                  Affordable Treatment Budget <span className="text-rose-600">*</span>
                 </label>
-                <input
-                  id="enquiry-insurance-company"
-                  type="text"
-                  value={insuranceCompany}
+                <select
+                  id={`${idPrefix}-budget`}
+                  value={budget}
                   onChange={(e) => {
-                    setInsuranceCompany(e.target.value);
-                    if (errors.insuranceCompany) {
-                      setErrors((prev) => ({ ...prev, insuranceCompany: '' }));
-                    }
+                    setBudget(e.target.value);
+                    if (errors.budget) setErrors((prev) => ({ ...prev, budget: '' }));
                   }}
-                  placeholder="e.g. Star Health, HDFC ERGO, ICICI Lombard, Medi Assist"
-                  className={`w-full min-h-[46px] px-3.5 py-2.5 text-sm rounded-xl border bg-white text-slate-900 placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] ${
-                    errors.insuranceCompany ? 'border-rose-400' : 'border-slate-300'
+                  className={`w-full min-h-[46px] px-3.5 py-2.5 text-sm rounded-xl border bg-white text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] ${
+                    errors.budget ? 'border-rose-400' : 'border-slate-300'
                   }`}
-                />
-                {errors.insuranceCompany && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.insuranceCompany}</p>
+                  required
+                >
+                  <option value="">Select budget range...</option>
+                  {AFFORDABLE_BUDGETS.map((range) => (
+                    <option key={range} value={range}>
+                      {range}
+                    </option>
+                  ))}
+                </select>
+                {errors.budget && (
+                  <p className="text-xs text-rose-600 mt-1">{errors.budget}</p>
                 )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* 4. Expected Surgery Date & 6. Patient Name & 7. Mobile Number */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* 4. Expected Surgery Date */}
+        {/* Field 6: Suggested Treatment Plan & Field 7: Expected Surgery Date */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label htmlFor="enquiry-surgery-date" className="block text-sm font-semibold text-slate-800 mb-1.5">
-              4. Expected Surgery Date <span className="text-xs font-normal text-slate-500">(Optional)</span>
+            <label htmlFor={`${idPrefix}-treatment-plan`} className="block text-sm font-semibold text-slate-800 mb-1.5">
+              Suggested Treatment Plan <span className="text-xs font-normal text-slate-500">(Optional)</span>
+            </label>
+            <input
+              id={`${idPrefix}-treatment-plan`}
+              type="text"
+              value={suggestedTreatmentPlan}
+              onChange={(e) => setSuggestedTreatmentPlan(e.target.value)}
+              placeholder="e.g. Laser Piles, Laparoscopic Hernia"
+              className="w-full min-h-[46px] px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61]"
+            />
+          </div>
+
+          <div>
+            <label htmlFor={`${idPrefix}-surgery-date`} className="block text-sm font-semibold text-slate-800 mb-1.5">
+              Expected Surgery Date <span className="text-xs font-normal text-slate-500">(Optional)</span>
             </label>
             <div className="relative">
               <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
               <input
-                id="enquiry-surgery-date"
+                id={`${idPrefix}-surgery-date`}
                 type="date"
                 min={todayISO}
                 value={expectedSurgeryDate}
@@ -347,78 +402,19 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
                     setErrors((prev) => ({ ...prev, expectedSurgeryDate: '' }));
                   }
                 }}
-                className={`w-full min-h-[46px] pl-10 pr-3 py-2.5 text-sm rounded-xl border bg-white text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] ${
+                className={`w-full min-w-0 max-w-full min-h-[46px] pl-10 pr-3 py-2.5 text-sm rounded-xl border bg-white text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] ${
                   errors.expectedSurgeryDate ? 'border-rose-400' : 'border-slate-300'
                 }`}
               />
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">Leave blank if undecided</p>
             {errors.expectedSurgeryDate && (
               <p className="text-xs text-rose-600 mt-1">{errors.expectedSurgeryDate}</p>
-            )}
-          </div>
-
-          {/* 6. Patient / Contact Person Name */}
-          <div>
-            <label htmlFor="enquiry-name" className="block text-sm font-semibold text-slate-800 mb-1.5">
-              6. Patient / Contact Person Name <span className="text-rose-600">*</span>
-            </label>
-            <input
-              id="enquiry-name"
-              type="text"
-              autoComplete="name"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
-              }}
-              placeholder="Enter full name"
-              className={`w-full min-h-[46px] px-3.5 py-2.5 text-sm rounded-xl border bg-white text-slate-900 placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] ${
-                errors.name ? 'border-rose-400' : 'border-slate-300'
-              }`}
-              required
-            />
-            {errors.name && (
-              <p className="text-xs text-rose-600 mt-1">{errors.name}</p>
-            )}
-          </div>
-
-          {/* 7. Mobile Number */}
-          <div>
-            <label htmlFor="enquiry-mobile" className="block text-sm font-semibold text-slate-800 mb-1.5">
-              7. Mobile Number <span className="text-rose-600">*</span>
-            </label>
-            <div className="flex">
-              <span className="inline-flex items-center px-3 bg-gradient-to-b from-sky-50 to-cyan-50 border border-r-0 border-slate-300 rounded-l-xl text-sm font-bold text-[#062B61] font-mono">
-                +91
-              </span>
-              <input
-                id="enquiry-mobile"
-                type="tel"
-                inputMode="numeric"
-                autoComplete="tel-national"
-                maxLength={10}
-                value={mobile}
-                onChange={(e) => {
-                  const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-                  setMobile(digits);
-                  if (errors.mobile) setErrors((prev) => ({ ...prev, mobile: '' }));
-                }}
-                placeholder="10-digit mobile"
-                className={`w-full min-h-[46px] px-3.5 py-2.5 text-sm rounded-r-xl border bg-white text-slate-900 font-mono tabular-nums placeholder:font-sans placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-[#062B61] ${
-                  errors.mobile ? 'border-rose-400' : 'border-slate-300'
-                }`}
-                required
-              />
-            </div>
-            {errors.mobile && (
-              <p className="text-xs text-rose-600 mt-1">{errors.mobile}</p>
             )}
           </div>
         </div>
 
         {/* Consent & Privacy Assurance */}
-        <div className="pt-1 space-y-3">
+        <div className="pt-1">
           <label className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 cursor-pointer py-1">
             <input
               type="checkbox"
@@ -426,7 +422,7 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
               onChange={(e) => setWhatsappConsent(e.target.checked)}
               className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#062B61] focus:ring-[#062B61] shrink-0"
             />
-            <span>
+            <span className="min-w-0 leading-relaxed">
               I agree to receive an acknowledgement and surgical option updates from Acquire Surgery via WhatsApp, SMS, or phone call, in accordance with the{' '}
               <a
                 href="/privacy-policy"
@@ -445,15 +441,15 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
         </div>
 
         {/* Submit Button */}
-        <div className="pt-2">
+        <div className="pt-1">
           <motion.button
-            id="enquiry-submit-btn"
+            id={`${idPrefix}-submit-btn`}
             type="submit"
             disabled={isSubmitting}
             whileHover={isSubmitting ? undefined : { scale: 1.01 }}
             whileTap={isSubmitting ? undefined : { scale: 0.985 }}
             transition={{ duration: 0.16, ease: EASE_SMOOTH }}
-            className="group relative overflow-hidden w-full min-h-[54px] inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#062B61] via-[#0284C7] to-[#059669] hover:from-[#05234E] hover:via-[#0369A1] hover:to-[#047857] text-white text-sm sm:text-base font-bold tracking-wide px-6 py-3.5 rounded-xl shadow-lg shadow-cyan-900/20 transition-all cursor-pointer disabled:opacity-60"
+            className="group relative overflow-hidden w-full min-h-[54px] inline-flex items-center justify-center gap-2 sm:gap-2.5 bg-gradient-to-r from-[#062B61] via-[#0284C7] to-[#059669] hover:from-[#05234E] hover:via-[#0369A1] hover:to-[#047857] text-white text-xs sm:text-base font-bold tracking-wide px-4 sm:px-6 py-3.5 rounded-xl shadow-lg shadow-cyan-900/20 transition-all cursor-pointer disabled:opacity-60 text-center leading-snug"
           >
             <span
               aria-hidden="true"
@@ -463,8 +459,8 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
               <span className="relative">SUBMITTING YOUR REQUIREMENTS...</span>
             ) : (
               <>
-                <span className="relative">EXPLORE MY SURGICAL OPTIONS</span>
-                <ArrowRight className="relative w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
+                <span className="relative">{ctaLabel}</span>
+                <ArrowRight className="relative w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
               </>
             )}
           </motion.button>

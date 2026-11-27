@@ -12,6 +12,8 @@ import condGallbladderCareImg from '../assets/images/cond_gallbladder_care_17956
 import condPilesLaserImg from '../assets/images/cond_piles_laser_1795692757535.jpg';
 import condFissureCareImg from '../assets/images/cond_fissure_care_1795692757085.jpg';
 import condFistulaMappingImg from '../assets/images/cond_fistula_mapping_1795692775749.jpg';
+import condUterineFibroidsImg from '../assets/images/cond_uterine_fibroids_care_1795770940020.jpg';
+import condEndometriosisImg from '../assets/images/cond_endometriosis_care_1795770941449.jpg';
 
 export const LANDING_IMAGES = {
   heroConsultation: heroConsultationImg,
@@ -31,24 +33,32 @@ export interface ConditionVisualAsset {
 }
 
 export const CONDITION_IMAGES: Record<string, ConditionVisualAsset> = {
+  piles: {
+    src: condPilesLaserImg,
+    alt: 'Precision laser piles treatment setup in an accredited hospital for affordable piles surgery in India',
+  },
   hernia: {
     src: condHerniaCareImg,
-    alt: '3D medical visualization of modern laparoscopic hernia mesh reinforcement engineering in a bright clinical studio',
+    alt: 'Laparoscopic hernia mesh repair visualization for comparing hernia surgery cost and hospital facilities',
   },
   'gallbladder-stones': {
     src: condGallbladderCareImg,
-    alt: 'Modern minimally invasive laparoscopic optical keyhole surgical technology for gallbladder stone treatment',
+    alt: 'Minimally invasive laparoscopic gallbladder surgery technology for transparent gallbladder surgery cost options',
   },
-  piles: {
-    src: condPilesLaserImg,
-    alt: 'Precision fiber-optic surgical laser system in a clean hospital procedure room for day-care piles treatment',
+  'uterine-fibroids': {
+    src: condUterineFibroidsImg,
+    alt: 'Gynecology specialist discussing affordable uterine fibroid surgery and laparoscopic myomectomy options with a couple',
+  },
+  endometriosis: {
+    src: condEndometriosisImg,
+    alt: 'Doctor reviewing personalized endometriosis treatment options and hospital surgery cost clarity with a patient',
   },
   fissure: {
     src: condFissureCareImg,
-    alt: 'Specialist Indian surgeon reassuringly explaining gentle day-care fissure treatment options to a smiling patient',
+    alt: 'Specialist surgeon explaining gentle day-care anal fissure treatment and hospital budget options to a patient',
   },
   fistula: {
     src: condFistulaMappingImg,
-    alt: 'High-precision surgical ultrasound probe and contour mapping console used in modern fistula care evaluation',
+    alt: 'High-precision surgical ultrasound mapping console for evaluating anal fistula treatment options',
   },
 };
